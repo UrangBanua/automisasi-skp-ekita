@@ -22,3 +22,10 @@ Dokumen ini mencatat perbaikan bug dan peningkatan stabilitas sistem (berdasarka
 
 ## 5. Pembaruan Standar Environment
 - **Perbaikan:** Menyesuaikan variabel `.env.example` agar merujuk parameter `EKITA_BASE_URL` dan konfigurasi *username* sesuai dengan panggilan utilitas di `config.py`.
+## 6. Logika Kuantitas & Proses untuk Sub-Sekuens (X.Y)
+- **Masalah:** Kegiatan `1.b` memiliki sub-sekuens (`1.1`, `1.2`, `1.3`, `1.4`). Dalam satu grup, hanya entry **terakhir** yang boleh membawa `kuantitas`; entry sebelumnya harus dikirim dengan field `proses: "on"` (tanpa field `kuantitas` sama sekali).
+- **Perbaikan (`skp_automation.py`):** Payload builder sekarang mendeteksi pola `X.Y` pada `kegiatan_harian_skp`, mengelompokkan entry berdasarkan `(kode, X)`, lalu:
+  - Entry non-terakhir: hapus field `kuantitas`, set `proses: "on"`.
+  - Entry terakhir: tetap membawa `kuantitas` dari template (tidak ada field `proses`).
+- **Perbaikan (`api_client.py`):** Method `insert_harian` kini mengirim field secara eksklusif — jika `proses` ada, kirim `proses` tanpa `kuantitas`; jika tidak, kirim `kuantitas` tanpa `proses`.
+- **Hasil verifikasi:** 34/34 entry sukses pada real-run Agustus 2026; 15 entry `proses` + 19 entry `kuantitas`. Server menampilkan kolom Kuantitas kosong (hanya satuan "Kegiatan") untuk entry `proses: on`.

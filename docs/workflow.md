@@ -77,7 +77,8 @@ cd /opt/data/workspace/projects/automisasi-skp-ekita
 │ 14. GENERATE TANGGAL & BUILD PAYLOAD                          │
 │     Baca template data/skp_harian.jsonl (34 entry)            │
 │     Tanggal auto-adjust weekend                               │
-└──────────────┬────────────────────────────────────────────────┘
+│     Grouping X.Y: entry non-terakhir → proses="on"            │
+│     entry terakhir per grup → kuantitas dari template         │
                ▼
 ┌───────────────────────────────────────────────────────────────┐
 │ 15. INSERT SKP HARIAN                                         │
@@ -109,8 +110,7 @@ cd /opt/data/workspace/projects/automisasi-skp-ekita
 ---
 
 ## 4. Mapping Template → Kegiatan
-
-Template `skp_harian.jsonl` berisi 33 entry dengan atribut `kode`, `minggu`, `hari`, `seq`, `kegiatan_harian_skp`, `kuantitas`.
+Template `skp_harian.jsonl` berisi 34 entry dengan atribut `kode`, `minggu`, `hari`, `seq`, `kegiatan_harian_skp`, `kuantitas`.
 
 | `kode` | Kegiatan Harian      | Target   |
 |--------|----------------------|----------|
@@ -119,8 +119,7 @@ Template `skp_harian.jsonl` berisi 33 entry dengan atribut `kode`, `minggu`, `ha
 | `1.c`  | Kegiatan 1.c - N     | Target_1 |
 | `2.a`  | Kegiatan 2.a - N     | Target_2 |
 | `2.b`  | Kegiatan 2.b - N     | Target_2 |
-
-`kegiatan_harian_skp` diformat: `{kode} - minggu.{seq}` (untuk 1.b) atau `{kode} - N` (untuk 1.a/1.c/2.x).
+`kegiatan_harian_skp` diformat: `{kode} - x.y` (untuk 1.b, sub-sekuens) atau `{kode} - N` (untuk 1.a/1.c/2.x). Dalam grup sub-sekuens `X.Y`, hanya entry terakhir yang membawa `kuantitas`; entry sebelumnya dikirim dengan `proses: "on"` (tanpa field `kuantitas`).
 
 ---
 
@@ -161,8 +160,7 @@ automisasi-skp-ekita/
 ├── config.py            # Endpoint, turunan SKP, nama bulan
 ├── api_client.py        # Client HTTP (login, CRUD SKP)
 ├── skp_automation.py    # Script utama (argumen --bulan --tahun)
-├── data/
-│   └── skp_harian.jsonl # Template 33 entry (hari relatif)
+│   └── skp_harian.jsonl # Template 34 entry (hari relatif)
 ├── docs/
 │   ├── project_plan.md  # Dokumen rencana
 │   └── workflow.md      # Dokumen alur kerja (ini)
