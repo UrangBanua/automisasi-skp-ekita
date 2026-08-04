@@ -52,6 +52,8 @@ class EkitaClient:
     # ── 01. Login ────────────────────────────────────────────
 
     def login(self, username, password):
+        # Dapatkan initial session cookie dulu (GET /)
+        self.session.get(BASE_URL)
         resp = self.session.post(
             self._url("login"),
             data={"username": username, "password": password},
@@ -68,8 +70,9 @@ class EkitaClient:
             data = resp.json()
             rows = data.get("data", [])
             if rows:
-                # row[2] = onclick="target_tahunan_skp(ID)"
-                match = re.search(r"target_tahunan_skp\((\d+)\)", rows[0][2])
+                # Gabungkan seluruh kolom HTML — hindari salah index kolom
+                row_html = "".join(str(col) for col in rows[0])
+                match = re.search(r"target_tahunan_skp\((\d+)\)", row_html)
                 if match:
                     return match.group(1)
         except (json.JSONDecodeError, KeyError, IndexError):
@@ -87,8 +90,9 @@ class EkitaClient:
             rows = data.get("data", [])
             ids = []
             for row in rows:
-                # row[8] = onclick="ubah_target_tahunan_skp(ID)"
-                match = re.search(r"ubah_target_tahunan_skp\((\d+)\)", row[8])
+                # Gabungkan seluruh kolom — hindari salah index
+                row_html = "".join(str(col) for col in row)
+                match = re.search(r"ubah_target_tahunan_skp\((\d+)\)", row_html)
                 if match:
                     ids.append(match.group(1))
             return ids  # [238317, 238318]
@@ -105,9 +109,9 @@ class EkitaClient:
             data = resp.json()
             rows = data.get("data", [])
             for row in rows:
-                if len(row) >= 3 and row[2].upper() == nama_bulan.upper():
-                    # row[4] = onclick="hapus_bulanan_skp(ID)"
-                    match = re.search(r"hapus_bulanan_skp\((\d+)\)", row[4])
+                row_html = "".join(str(col) for col in row)
+                if nama_bulan.upper() in row_html.upper():
+                    match = re.search(r"hapus_bulanan_skp\((\d+)\)", row_html)
                     if match:
                         return match.group(1)
         except (json.JSONDecodeError, KeyError, IndexError):
@@ -143,8 +147,8 @@ class EkitaClient:
     def get_target_bulanan_ids(self, id_opmt_bulanan_skp):
         """GET /c_user/target_bulanan_skp/<id> → extract [id1, id2]."""
         resp = self._get("target_bulanan_page", path=f"/{id_opmt_bulanan_skp}")
-        # Parse HTML: cari semua onclick="ubah_target_bulanan_skp(ID)"
-        ids = re.findall(r"ubah_target_bulanan_skp\((\d+)\)", resp.text)
+        # Parse HTML: cari semua onclick="ubah_target_bulanan_skp('ID', ...)"
+        ids = re.findall(r"ubah_target_bulanan_skp\('(\d+)'", resp.text)
         return ids  # [1226899, 1226910]
 
     # ── 08. INSERT turunan ───────────────────────────────────
