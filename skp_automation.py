@@ -314,6 +314,19 @@ def main():
             "id_opmt_target_bulanan_skp": info["id_harian"],
             "id_opmt_target_skp": info["id_opmt_target_skp"],
         })
+    # Grouping sub-sekuens X.Y: hanya entry terakhir per grup yang membawa kuantitas;
+    # entry sebelumnya dikirim tanpa kuantitas, hanya proses="on".
+    grup = {}
+    for i, p in enumerate(payloads):
+        m = re.search(r"- (\d+)\.(\d+)", p["kegiatan_harian_skp"])
+        if m:
+            key = (p["kegiatan_harian_skp"].split(" ")[1], m.group(1))
+            grup.setdefault(key, []).append(i)
+    for key, idxs in grup.items():
+        for pos, idx in enumerate(idxs):
+            if pos < len(idxs) - 1:
+                payloads[idx].pop("kuantitas", None)
+                payloads[idx]["proses"] = "on"
     print(f"      Total payload: {len(payloads)}")
 
     # 15. Insert harian

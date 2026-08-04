@@ -181,15 +181,19 @@ class EkitaClient:
 
     def insert_harian(self, entry):
         """POST /c_user/aksi_harian_skp."""
-        resp = self._post("aksi_harian", data={
+        data = {
             "tanggal": entry["tanggal"],
             "id_opmt_realisasi_harian_skp": "",
             "kegiatan_harian_skp": entry["kegiatan_harian_skp"],
-            "kuantitas": entry["kuantitas"],
             "satuan_kuantitas": entry.get("satuan_kuantitas", "127"),
             "id_opmt_target_bulanan_skp": entry["id_opmt_target_bulanan_skp"],
             "id_opmt_target_skp": entry["id_opmt_target_skp"],
-        })
+        }
+        if "proses" in entry:
+            data["proses"] = entry["proses"]
+        else:
+            data["kuantitas"] = entry["kuantitas"]
+        resp = self._post("aksi_harian", data=data)
         return resp.status_code == 200
 
     # ── 11. READ list SKP Harian ─────────────────────────────
