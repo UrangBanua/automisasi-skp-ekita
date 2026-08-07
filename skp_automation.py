@@ -65,15 +65,9 @@ def generate_tanggal(tahun, bulan, minggu, hari):
 
 
 def load_template(path):
-    """Parse file JSONL template → list of dict."""
-    entries = []
+    """Parse file JSON template → list of dict."""
     with open(path, encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line or not line.startswith("{"):
-                continue
-            entries.append(json.loads(line))
-    return entries
+        return json.load(f)
 
 
 # ──────────────────────────────────────────────────────────────
@@ -183,14 +177,93 @@ def buat_target_bulanan(client, id_bulanan, target_skp_1, target_skp_2, turunan_
 
 def main():
     parser = argparse.ArgumentParser(description="Automasi SKP Harian - Ekita BKD HST")
-    parser.add_argument("--bulan", type=int, required=True, help="Bulan (1-12)")
+    parser.add_argument("--bulan", type=int, required=False, help="Bulan (1-12)")
     parser.add_argument("--tahun", type=int, required=True, help="Tahun, contoh 2026")
+    parser.add_argument("--cek", choices=["nilai"], help="Cek data bulanan (misal: nilai)")
+    parser.add_argument("--del", dest="delete_target", choices=["harian"], help="Hapus data spesifik (misal: harian)")
     parser.add_argument("--dry-run", action="store_true", help="Preview tanpa kirim & tanpa login")
+
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(1)
+
     args = parser.parse_args()
 
-    if not 1 <= args.bulan <= 12:
-        print("[ERROR] --bulan harus 1-12")
-        sys.exit(1)
+    if not args.cek:
+        if not args.bulan:
+            parser.print_help()
+            print("\n[ERROR] --bulan wajib diisi untuk mode ini")
+            sys.exit(1)
+        if not 1 <= args.bulan <= 12:
+            print("[ERROR] --bulan harus 1-12")
+            sys.exit(1)
+
+    # Mode Cek Nilai
+    if args.cek == "nilai":
+        if not USERNAME or not PASSWORD:
+            sys.exit("[ERROR] EKITA_USERNAME/EKITA_PASSWORD belum diatur di .env")
+        client = EkitaClient()
+        if not client.login(USERNAME, PASSWORD):
+            sys.exit("[ERROR] Login gagal")
+        
+        print(f"\n[CEK NILAI] Mengambil data bulanan tahun {args.tahun}...")
+        resp = client._post("bulanan_ajax", raw=f"tanggal=&status={args.tahun}")
+        try:
+            data = resp.json()
+            print("="*60)
+            print(f"{'Bulan':<15} | {'Nilai':<10} | {'Status Persetujuan'}")
+            print("-" * 60)
+            for row in data.get("data", []):
+                st = re.sub(r'<[^>]+>', '', str(row[7])).strip()
+                print(f"{str(row[2]):<15} | {str(row[3]):<10} | {st}")
+            print("="*60)
+        except Exception as e:
+            print(f"[ERROR] Gagal membaca data nilai: {e}")
+        sys.exit(0)
+
+    # Mode Delete Harian
+    if args.delete_target == "harian":
+        if not USERNAME or not PASSWORD:
+            sys.exit("[ERROR] EKITA_USERNAME/EKITA_PASSWORD belum diatur di .env")
+        client = EkitaClient()
+        if not client.login(USERNAME, PASSWORD):
+            sys.exit("[ERROR] Login gagal")
+            
+        bulan_str = BULAN_NAMA.get(args.bulan, str(args.bulan))
+        print(f"\n[DEL HARIAN] Mengambil daftar harian {bulan_str} {args.tahun}...")
+        html = client.get_list_harian(args.bulan, args.tahun)
+        rows = re.findall(r'<tr[^>]*>(.*?)</tr>', html, re.DOTALL | re.IGNORECASE)
+        
+        if len(rows) <= 1:
+            print("      Tidak ada data harian ditemukan.")
+            sys.exit(0)
+            
+        to_delete = []
+        skipped = 0
+        
+        for row in rows[1:]: # Skip header
+            cells = re.findall(r'<t[dh][^>]*>(.*?)</t[dh]>', row, re.DOTALL | re.IGNORECASE)
+            if len(cells) >= 9:
+                status = re.sub(r'<[^>]+>', '', cells[6]).strip().lower()
+                if status == 'sesuai':
+                    skipped += 1
+                    continue
+                
+                # Cari ID
+                id_match = re.search(r'hapus_harian\((\d+)\)', row)
+                if id_match:
+                    to_delete.append(id_match.group(1))
+        
+        if not to_delete:
+            print(f"      Tidak ada data yang bisa dihapus. {skipped} data di-skip karena status 'Sesuai'.")
+            sys.exit(0)
+            
+        print(f"      Ditemukan {len(to_delete)} data siap hapus ({skipped} data di-skip karena 'Sesuai'). Mulai menghapus...")
+        for i, h_id in enumerate(to_delete, 1):
+            client.hapus_harian(h_id)
+            print(f"      [{i}/{len(to_delete)}] Berhasil dihapus ID: {h_id}")
+        print("      Selesai menghapus.")
+        sys.exit(0)
 
     print("=" * 60)
     print("AUTOMASI SKP HARIAN - EKITA")
@@ -198,7 +271,7 @@ def main():
     print("=" * 60)
 
     # Load template
-    template_path = "data/skp_harian.jsonl"
+    template_path = "data/skp_harian.json"
     template = load_template(template_path)
     if not template:
         print("[ERROR] Template kosong / tidak ditemukan:", template_path)
@@ -216,8 +289,13 @@ def main():
         print(f"[ERROR] Gagal membaca {target_path}: {e}")
         sys.exit(1)
 
-    # Preview
-    print(f"\n[PREVIEW] {len(template)} entry dari template")
+    # Preview Target Bulanan
+    print(f"\n[PREVIEW TARGET BULAN {args.bulan}]")
+    print(f"  SKP 1.a: {turunan_skp['1']['turunan'][0]['kegiatan_turunan'][:70]}...")
+    print(f"  SKP 2.a: {turunan_skp['2']['turunan'][0]['kegiatan_turunan'][:70]}...")
+
+    # Preview Harian
+    print(f"\n[PREVIEW HARIAN] {len(template)} entry dari template")
     for e in template[:5]:
         tgl = generate_tanggal(args.tahun, args.bulan, e["minggu"], e["hari"])
         print(f"  {tgl}  {e['kegiatan_harian_skp']:<22} qty={e['kuantitas']}")
