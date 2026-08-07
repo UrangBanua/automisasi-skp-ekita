@@ -39,64 +39,6 @@ DATATABLE_PARAMS = (
     "&start=0&length=12&search%5Bvalue%5D=&search%5Bregex%5D=false"
 )
 
-# Turunan SKP definitions (static per target)
-TURUNAN_SKP = {
-    "1": {  # target_skp_1 = 238317
-        "target_waktu": "30",
-        "turunan": [
-            {
-                "kode": "1.a",
-                "kegiatan_turunan": "Membantu penyiapan bahan dan penyusunan buku besar pendapatan dan belanja TA 2026",
-                "target_kuantitas": "3",
-                "satuan_kuantitas": "127",
-                "kualitas": "100",
-                "target_waktu": "10",
-                "biaya": "",
-            },
-            {
-                "kode": "1.b",
-                "kegiatan_turunan": "Menyiapan bahan dan membantu pelaksanaan rekapitulasi pendapatan dan belanja untuk Laporan Semester dan Prognosis TA 2026",
-                "target_kuantitas": "5",
-                "satuan_kuantitas": "127",
-                "kualitas": "100",
-                "target_waktu": "20",
-                "biaya": "",
-            },
-            {
-                "kode": "1.c",
-                "kegiatan_turunan": "Membantu penyiapan bahan dan pelaksanaan penyelenggaraan akuntansi pendapatan dan belanja serta pengungkapan informasi lainnya sebagai bahan penyusunan Laporan Penjabaran Pertanggungjawaban APBD",
-                "target_kuantitas": "3",
-                "satuan_kuantitas": "127",
-                "kualitas": "100",
-                "target_waktu": "10",
-                "biaya": "",
-            },
-        ],
-    },
-    "2": {  # target_skp_2 = 238318
-        "target_waktu": "30",
-        "turunan": [
-            {
-                "kode": "2.a",
-                "kegiatan_turunan": "Melaksanakan monitoring, evaluasi dan troubleshooting di 37 SKPD Sebagai Admin SIPD TA 2026",
-                "target_kuantitas": "20",
-                "satuan_kuantitas": "127",
-                "kualitas": "100",
-                "target_waktu": "4",
-                "biaya": "",
-            },
-            {
-                "kode": "2.b",
-                "kegiatan_turunan": "Penyusunan rencana kerja dan sosialisasi penggunaan SIPD TA 2026 di Kabupaten HST",
-                "target_kuantitas": "4",
-                "satuan_kuantitas": "127",
-                "kualitas": "100",
-                "target_waktu": "4",
-                "biaya": "",
-            },
-        ],
-    },
-}
 
 # Nama bulan (untuk matching di ajax_list)
 BULAN_NAMA = {

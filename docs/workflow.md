@@ -157,10 +157,12 @@ Tabel akhir ditampilkan dari endpoint `POST /c_harian_skp/ajax`. Kolom:
 
 ```
 automisasi-skp-ekita/
-├── config.py            # Endpoint, turunan SKP, nama bulan
+├── config.py            # Endpoint, nama bulan, auth credentials
 ├── api_client.py        # Client HTTP (login, CRUD SKP)
 ├── skp_automation.py    # Script utama (argumen --bulan --tahun)
-│   └── skp_harian.jsonl # Template 34 entry (hari relatif)
+├── data/
+│   ├── skp_harian.jsonl     # Template SKP harian (34 entry)
+│   └── target_bulanan.json  # Template target bulanan (uraian SKP 1 & 2)
 ├── docs/
 │   ├── project_plan.md  # Dokumen rencana
 │   └── workflow.md      # Dokumen alur kerja (ini)

@@ -11,7 +11,7 @@ import re
 import sys
 from datetime import date, timedelta
 
-from config import USERNAME, PASSWORD, BULAN_NAMA, TURUNAN_SKP
+from config import USERNAME, PASSWORD, BULAN_NAMA
 from api_client import EkitaClient
 
 # Mapping nama hari Indonesia → Python weekday (Senin=0 ... Minggu=6)
@@ -144,11 +144,11 @@ def print_harian(html):
 # Helper: buat target + turunan bulanan (step 07-12)
 # ──────────────────────────────────────────────────────────────
 
-def buat_target_bulanan(client, id_bulanan, target_skp_1, target_skp_2):
+def buat_target_bulanan(client, id_bulanan, target_skp_1, target_skp_2, turunan_skp):
     """Buat target bulanan SKP 1 & 2 beserta turunannya. Return True jika berhasil."""
     # 07. Insert target 1
     print("[07] Insert target bulanan SKP 1...")
-    client.insert_target_bulanan(id_bulanan, target_skp_1, TURUNAN_SKP["1"]["target_waktu"])
+    client.insert_target_bulanan(id_bulanan, target_skp_1, turunan_skp["1"]["target_waktu"])
     tb_ids_1 = client.get_target_bulanan_ids(id_bulanan)
     if not tb_ids_1:
         print("[ERROR] Tidak dapat id target bulanan 1")
@@ -158,13 +158,13 @@ def buat_target_bulanan(client, id_bulanan, target_skp_1, target_skp_2):
 
     # 09. Insert turunan 1.a, 1.b, 1.c
     print("[09] Insert turunan 1.a, 1.b, 1.c...")
-    for td in TURUNAN_SKP["1"]["turunan"]:
+    for td in turunan_skp["1"]["turunan"]:
         ok = client.insert_turunan(id_target_bulan_1, td)
         print(f"      {td['kode']}: {'OK' if ok else 'GAGAL'}")
 
     # 10. Insert target 2
     print("[10] Insert target bulanan SKP 2...")
-    client.insert_target_bulanan(id_bulanan, target_skp_2, TURUNAN_SKP["2"]["target_waktu"])
+    client.insert_target_bulanan(id_bulanan, target_skp_2, turunan_skp["2"]["target_waktu"])
     tb_ids_2 = client.get_target_bulanan_ids(id_bulanan)
     if len(tb_ids_2) < 2:
         print(f"[ERROR] target bulanan 2 tidak ditemukan: {tb_ids_2}")
@@ -174,7 +174,7 @@ def buat_target_bulanan(client, id_bulanan, target_skp_1, target_skp_2):
 
     # 12. Insert turunan 2.a, 2.b
     print("[12] Insert turunan 2.a, 2.b...")
-    for td in TURUNAN_SKP["2"]["turunan"]:
+    for td in turunan_skp["2"]["turunan"]:
         ok = client.insert_turunan(id_target_bulan_2, td)
         print(f"      {td['kode']}: {'OK' if ok else 'GAGAL'}")
 
@@ -202,6 +202,18 @@ def main():
     template = load_template(template_path)
     if not template:
         print("[ERROR] Template kosong / tidak ditemukan:", template_path)
+        sys.exit(1)
+
+    target_path = "data/target_bulanan.json"
+    try:
+        with open(target_path, "r", encoding="utf-8") as f:
+            all_targets = json.load(f)
+            turunan_skp = all_targets[str(args.bulan)]
+    except KeyError:
+        print(f"[ERROR] Data target untuk bulan {args.bulan} tidak ditemukan di {target_path}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"[ERROR] Gagal membaca {target_path}: {e}")
         sys.exit(1)
 
     # Preview
@@ -268,7 +280,7 @@ def main():
         print(f"      id_opmt_bulanan_skp = {id_bulanan}")
 
         # 07-12. Buat target + turunan
-        if not buat_target_bulanan(client, id_bulanan, target_skp_1, target_skp_2):
+        if not buat_target_bulanan(client, id_bulanan, target_skp_1, target_skp_2, turunan_skp):
             sys.exit(1)
 
     # 13. Mapping get_target_bulan
@@ -279,7 +291,7 @@ def main():
     # Fallback: bulanan header ada tapi target kosong (dari run sebelumnya yg gagal)
     if not targets and id_bulanan:
         print("      Target kosong — membuat target entries...")
-        if not buat_target_bulanan(client, id_bulanan, target_skp_1, target_skp_2):
+        if not buat_target_bulanan(client, id_bulanan, target_skp_1, target_skp_2, turunan_skp):
             sys.exit(1)
         targets = client.get_target_bulan(tanggal_first)
 

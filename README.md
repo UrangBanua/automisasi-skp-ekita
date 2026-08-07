@@ -7,7 +7,8 @@ Sistem otomatisasi untuk input SKP Harian ke sistem Ekita BKD HST, menggantikan 
 - Login otomatis dengan session management (`ci_session`)
 - Auto-detect dan auto-insert target bulanan jika belum ada (step 04-12)
 - Resume otomatis jika target bulanan tidak lengkap (fallback logic)
-- Parse file template `data/skp_harian.jsonl` (format JSONL, 34 entry)
+- Parse file template target bulanan `data/target_bulanan.json` (skema uraian SKP 1 & 2)
+- Parse file template harian `data/skp_harian.jsonl` (format JSONL, 34 entry)
 - Generate tanggal otomatis dari (minggu, hari) dengan auto-adjust weekend
 - Grouping sub-sekuens `X.Y`: entry non-terakhir dikirim dengan `proses: "on"`, entry terakhir membawa `kuantitas`
 - Kirim SKP Harian secara batch (34 entry) dengan ID yang sudah di-map otomatis
@@ -62,6 +63,9 @@ python skp_automation.py --bulan 8 --tahun 2026
 
 ## Format File Template
 
+### Template Harian (`skp_harian.jsonl`)
+
+
 File template `data/skp_harian.jsonl` menggunakan format JSON per baris (JSONL), 34 entry:
 
 ```json
@@ -77,8 +81,11 @@ File template `data/skp_harian.jsonl` menggunakan format JSON per baris (JSONL),
 | `minggu`              | Minggu ke-N dalam bulan (1-5)                                     |
 | `hari`                | Nama hari Indonesia: Senin-Jumat                                  |
 | `seq`                 | Urutan entry pada tanggal yang sama (default: 1)                  |
-| `kegiatan_harian_skp` | Nama kegiatan (contoh: "Kegiatan 1.a - 1")                        |
 | `kuantitas`           | Jumlah (default: "1"); untuk `1.b` berlaku hanya pada entry terakhir per grup |
+
+### Template Target Bulanan (`target_bulanan.json`)
+
+Menyimpan deskripsi/uraian untuk kegiatan SKP bulanan (SKP 1 dan SKP 2). File ini diubah setiap bulannya jika diperlukan uraian baru, dengan mempertahankan struktur JSON aslinya.
 
 ### Logika Sub-Sekuens `X.Y`
 
