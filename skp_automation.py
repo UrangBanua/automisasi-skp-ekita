@@ -74,21 +74,36 @@ def load_template(path):
 # Mapping kegiatan → id harian
 # ──────────────────────────────────────────────────────────────
 
-def build_harian_mapping(targets):
+def build_harian_mapping(targets, turunan_skp=None):
     """
     Dari response get_target_bulan, build mapping:
       kode → {"id_harian": "<id>-turunan", "id_opmt_target_skp": "<...>"}
+    Menggunakan pencocokan teks persis dari template target_bulanan.json,
+    dengan fallback ke KEYWORD_MAP jika ada perbedaan spasi/karakter.
     """
     mapping = {}
+    
+    desc_to_kode = {}
+    if turunan_skp:
+        for skp_key in ["1", "2"]:
+            for td in turunan_skp[skp_key]["turunan"]:
+                desc_to_kode[td["kegiatan_turunan"].strip().lower()] = td["kode"]
+                
     for row in targets:
-        kegiatan = row.get("kegiatan", "")
+        kegiatan = row.get("kegiatan", "").strip().lower()
         kode = None
-        for kw_kode, keyword in KEYWORD_MAP:
-            if keyword.lower() in kegiatan.lower():
-                kode = kw_kode
-                break
+        
+        if kegiatan in desc_to_kode:
+            kode = desc_to_kode[kegiatan]
+        else:
+            for kw_kode, keyword in KEYWORD_MAP:
+                if keyword.lower() in kegiatan:
+                    kode = kw_kode
+                    break
+                    
         if kode is None:
             continue
+            
         mapping[kode] = {
             "id_harian": f"{row.get('id')}-turunan",
             "id_opmt_target_skp": row.get("id_opmt_target_skp", ""),
@@ -176,7 +191,7 @@ def buat_target_bulanan(client, id_bulanan, target_skp_1, target_skp_2, turunan_
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Automasi SKP Harian - Ekita BKD HST")
+    parser = argparse.ArgumentParser(description="Automasi SKP Bulanan & Harian - Ekita Kab. HST")
     parser.add_argument("--bulan", type=int, required=False, help="Bulan (1-12)")
     parser.add_argument("--tahun", type=int, required=True, help="Tahun, contoh 2026")
     parser.add_argument("--cek", choices=["nilai"], help="Cek data bulanan (misal: nilai)")
@@ -304,7 +319,7 @@ def main():
         sys.exit(0)
 
     print("=" * 60)
-    print("AUTOMASI SKP HARIAN - EKITA")
+    print("AUTOMASI SKP BULANAN & HARIAN - EKITA KAB. HST")
     print(f"Bulan: {args.bulan} ({BULAN_NAMA.get(args.bulan, '?')})  Tahun: {args.tahun}")
     print("=" * 60)
 
@@ -414,7 +429,7 @@ def main():
     if not targets:
         print("[ERROR] get_target_bulan kosong")
         sys.exit(1)
-    harian_map = build_harian_mapping(targets)
+    harian_map = build_harian_mapping(targets, turunan_skp)
     for k in ("1.a", "1.b", "1.c", "2.a", "2.b"):
         info = harian_map.get(k)
         if info:

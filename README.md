@@ -1,9 +1,9 @@
-# 🚀 Automasi SKP Harian - Ekita BKD HST
+# 🚀 Automasi SKP Bulanan & Harian - Ekita Kab. HST
 
 ![Python](https://img.shields.io/badge/Python-3.12-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
-Otomatisasi untuk input SKP Bulanan & Harian Pada Ekita BKPSDMD - KAB. HST.
+Otomatisasi untuk input SKP Bulanan & Harian Pada Ekita Kab. HST.
 
 ---
 
@@ -16,6 +16,7 @@ Otomatisasi untuk input SKP Bulanan & Harian Pada Ekita BKPSDMD - KAB. HST.
 - 🔄 **Auto-Detect & Fallback**: Skrip otomatis mengecek keberadaan target bulanan. Jika belum ada (atau tidak lengkap), skrip secara mandiri akan membangun *(insert)* header bulanan beserta seluruh turunannya.
 - 📅 **Auto-Adjust Tanggal**: Otomatis melewati *weekend* (Sabtu digeser ke Jumat, Minggu digeser ke Senin).
 - 🧬 **Grouping Sub-Sekuens (X.Y)**: Mendukung pengisian nilai `kuantitas` versus `proses` secara otomatis berdasarkan posisi grup urutan (entri non-terakhir dikirim sebagai "Proses", entri terakhir membawa "Kuantitas").
+- 🤖 **Hermes Agent Ready**: Skrip ini dirancang secara rapi sehingga dapat diintegrasikan langsung sebagai *Skill Automasi* pada asisten AI (Hermes Agent). Anda bisa mengeksekusi input data, mengecek nilai, hingga melakukan penghapusan secara aman cukup lewat ketikan *chat* di Telegram atau WhatsApp!
 
 ---
 
