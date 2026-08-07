@@ -180,7 +180,7 @@ def main():
     parser.add_argument("--bulan", type=int, required=False, help="Bulan (1-12)")
     parser.add_argument("--tahun", type=int, required=True, help="Tahun, contoh 2026")
     parser.add_argument("--cek", choices=["nilai"], help="Cek data bulanan (misal: nilai)")
-    parser.add_argument("--del", dest="delete_target", choices=["harian"], help="Hapus data spesifik (misal: harian)")
+    parser.add_argument("--del", dest="delete_target", choices=["harian", "bulanan"], help="Hapus data spesifik (harian / bulanan)")
     parser.add_argument("--dry-run", action="store_true", help="Preview tanpa kirim & tanpa login")
 
     if len(sys.argv) == 1:
@@ -263,6 +263,44 @@ def main():
             client.hapus_harian(h_id)
             print(f"      [{i}/{len(to_delete)}] Berhasil dihapus ID: {h_id}")
         print("      Selesai menghapus.")
+        sys.exit(0)
+
+    # Mode Delete Bulanan
+    if args.delete_target == "bulanan":
+        if not USERNAME or not PASSWORD:
+            sys.exit("[ERROR] EKITA_USERNAME/EKITA_PASSWORD belum diatur di .env")
+        client = EkitaClient()
+        if not client.login(USERNAME, PASSWORD):
+            sys.exit("[ERROR] Login gagal")
+            
+        bulan_str = BULAN_NAMA.get(args.bulan, str(args.bulan)).upper()
+        print(f"\n[DEL BULANAN] Mengambil daftar target bulanan tahun {args.tahun}...")
+        resp = client._post("bulanan_ajax", raw=f"tanggal=&status={args.tahun}")
+        try:
+            data = resp.json()
+        except Exception as e:
+            print(f"[ERROR] Gagal membaca data bulanan: {e}")
+            sys.exit(1)
+            
+        found = False
+        for row in data.get("data", []):
+            row_bulan = str(row[2]).strip().upper()
+            if row_bulan == bulan_str:
+                found = True
+                status = re.sub(r'<[^>]+>', '', str(row[7])).strip().lower()
+                if status == 'disetujui':
+                    print(f"      [SKIP] Bulan {bulan_str} {args.tahun} tidak dihapus karena status 'Disetujui'.")
+                else:
+                    id_match = re.search(r'hapus_bulanan_skp\((\d+)\)', str(row[4]))
+                    if id_match:
+                        h_id = id_match.group(1)
+                        client.hapus_bulanan(h_id)
+                        print(f"      [OK] Berhasil menghapus target bulanan {bulan_str} {args.tahun} (ID: {h_id}).")
+                    else:
+                        print(f"      [ERROR] Tidak dapat menemukan ID hapus untuk {bulan_str} {args.tahun}.")
+        
+        if not found:
+            print(f"      Tidak ada data target bulanan ditemukan untuk {bulan_str} {args.tahun}.")
         sys.exit(0)
 
     print("=" * 60)

@@ -14,7 +14,7 @@
                 },
                 {
                     "kode": "1.b",
-                    "kegiatan_turunan": "Menyiapan bahan dan membantu pelaksanaan rekapitulasi pendapatan dan belanja untuk Laporan Semester dan Prognosis TA 2026",
+                    "kegiatan_turunan": "Menyiapan bahan dan membantu pelaksanaan rekonsiliasi pendapatan dan belanja untuk bahan penyusunan Laporan Keuangan Pemerintah Daerah (LKPD) Unaudited TA 2025",
                     "target_kuantitas": "5",
                     "satuan_kuantitas": "127",
                     "kualitas": "100",
@@ -23,7 +23,7 @@
                 },
                 {
                     "kode": "1.c",
-                    "kegiatan_turunan": "Membantu penyiapan bahan dan pelaksanaan penyelenggaraan akuntansi pendapatan dan belanja serta pengungkapan informasi lainnya sebagai bahan penyusunan Laporan Penjabaran Pertanggungjawaban APBD",
+                    "kegiatan_turunan": "Membantu penyiapan bahan dan pelaksanaan penyelenggaraan akuntansi pendapatan dan belanja serta pengungkapan informasi lainnya sebagai bahan penyusunan Laporan Keuangan Pemerintah Daerah (LKPD) Unaudited TA 2025",
                     "target_kuantitas": "3",
                     "satuan_kuantitas": "127",
                     "kualitas": "100",
@@ -71,7 +71,7 @@
                 },
                 {
                     "kode": "1.b",
-                    "kegiatan_turunan": "Menyiapan bahan dan membantu pelaksanaan rekapitulasi pendapatan dan belanja untuk Laporan Semester dan Prognosis TA 2026",
+                    "kegiatan_turunan": "Menyiapan bahan dan membantu pelaksanaan rekonsiliasi pendapatan dan belanja untuk bahan penyusunan Laporan Keuangan Pemerintah Daerah (LKPD) Unaudited TA 2025",
                     "target_kuantitas": "5",
                     "satuan_kuantitas": "127",
                     "kualitas": "100",
@@ -80,7 +80,7 @@
                 },
                 {
                     "kode": "1.c",
-                    "kegiatan_turunan": "Membantu penyiapan bahan dan pelaksanaan penyelenggaraan akuntansi pendapatan dan belanja serta pengungkapan informasi lainnya sebagai bahan penyusunan Laporan Penjabaran Pertanggungjawaban APBD",
+                    "kegiatan_turunan": "Membantu penyiapan bahan dan pelaksanaan penyelenggaraan akuntansi pendapatan dan belanja serta pengungkapan informasi lainnya sebagai bahan penyusunan Laporan Keuangan Pemerintah Daerah (LKPD) Unaudited TA 2025",
                     "target_kuantitas": "3",
                     "satuan_kuantitas": "127",
                     "kualitas": "100",
@@ -128,7 +128,7 @@
                 },
                 {
                     "kode": "1.b",
-                    "kegiatan_turunan": "Menyiapan bahan dan membantu pelaksanaan rekapitulasi pendapatan dan belanja untuk Laporan Semester dan Prognosis TA 2026",
+                    "kegiatan_turunan": "Menyiapan bahan dan membantu pelaksanaan rekonsiliasi pendapatan dan belanja untuk bahan penyusunan Laporan Keuangan Pemerintah Daerah (LKPD) Unaudited TA 2025",
                     "target_kuantitas": "5",
                     "satuan_kuantitas": "127",
                     "kualitas": "100",
@@ -137,7 +137,7 @@
                 },
                 {
                     "kode": "1.c",
-                    "kegiatan_turunan": "Membantu penyiapan bahan dan pelaksanaan penyelenggaraan akuntansi pendapatan dan belanja serta pengungkapan informasi lainnya sebagai bahan penyusunan Laporan Penjabaran Pertanggungjawaban APBD",
+                    "kegiatan_turunan": "Membantu penyiapan bahan dan pelaksanaan penyelenggaraan akuntansi pendapatan dan belanja serta pengungkapan informasi lainnya sebagai bahan penyusunan Laporan Keuangan Pemerintah Daerah (LKPD) Unaudited TA 2025",
                     "target_kuantitas": "3",
                     "satuan_kuantitas": "127",
                     "kualitas": "100",
@@ -185,7 +185,7 @@
                 },
                 {
                     "kode": "1.b",
-                    "kegiatan_turunan": "Menyiapan bahan dan membantu pelaksanaan rekapitulasi pendapatan dan belanja untuk Laporan Semester dan Prognosis TA 2026",
+                    "kegiatan_turunan": "Menyiapan bahan dan membantu pelaksanaan rekonsiliasi pendapatan dan belanja untuk bahan penyusunan Laporan Keuangan Pemerintah Daerah (LKPD) Audited TA 2025",
                     "target_kuantitas": "5",
                     "satuan_kuantitas": "127",
                     "kualitas": "100",
@@ -194,7 +194,7 @@
                 },
                 {
                     "kode": "1.c",
-                    "kegiatan_turunan": "Membantu penyiapan bahan dan pelaksanaan penyelenggaraan akuntansi pendapatan dan belanja serta pengungkapan informasi lainnya sebagai bahan penyusunan Laporan Penjabaran Pertanggungjawaban APBD",
+                    "kegiatan_turunan": "Membantu penyiapan bahan dan pelaksanaan penyelenggaraan akuntansi pendapatan dan belanja serta pengungkapan informasi lainnya sebagai bahan penyusunan Laporan Keuangan Pemerintah Daerah (LKPD) Audited TA 2025",
                     "target_kuantitas": "3",
                     "satuan_kuantitas": "127",
                     "kualitas": "100",
@@ -242,7 +242,7 @@
                 },
                 {
                     "kode": "1.b",
-                    "kegiatan_turunan": "Menyiapan bahan dan membantu pelaksanaan rekapitulasi pendapatan dan belanja untuk Laporan Semester dan Prognosis TA 2026",
+                    "kegiatan_turunan": "Menyiapan bahan dan membantu pelaksanaan rekapitulasi pendapatan dan belanja untuk Saldo Awal TA 2026 setalah selesai penyerahan LKPD Audited TA 2025",
                     "target_kuantitas": "5",
                     "satuan_kuantitas": "127",
                     "kualitas": "100",
@@ -251,7 +251,7 @@
                 },
                 {
                     "kode": "1.c",
-                    "kegiatan_turunan": "Membantu penyiapan bahan dan pelaksanaan penyelenggaraan akuntansi pendapatan dan belanja serta pengungkapan informasi lainnya sebagai bahan penyusunan Laporan Penjabaran Pertanggungjawaban APBD",
+                    "kegiatan_turunan": "Membantu penyiapan bahan dan pelaksanaan penyelenggaraan akuntansi pendapatan dan belanja serta pengungkapan informasi lainnya sebagai bahan penyusunan Laporan Penjabaran Pertanggungjawaban APBD TA 2025",
                     "target_kuantitas": "3",
                     "satuan_kuantitas": "127",
                     "kualitas": "100",
@@ -308,7 +308,7 @@
                 },
                 {
                     "kode": "1.c",
-                    "kegiatan_turunan": "Membantu penyiapan bahan dan pelaksanaan penyelenggaraan akuntansi pendapatan dan belanja serta pengungkapan informasi lainnya sebagai bahan penyusunan Laporan Penjabaran Pertanggungjawaban APBD",
+                    "kegiatan_turunan": "Membantu penyiapan bahan dan pelaksanaan penyelenggaraan akuntansi pendapatan dan belanja serta pengungkapan informasi lainnya sebagai bahan penyusunan Laporan penjabaran Pertanggungjawaban APBD TA 2025",
                     "target_kuantitas": "3",
                     "satuan_kuantitas": "127",
                     "kualitas": "100",
@@ -413,7 +413,7 @@
                 },
                 {
                     "kode": "1.b",
-                    "kegiatan_turunan": "Menyiapan bahan dan membantu pelaksanaan rekapitulasi pendapatan dan belanja untuk Laporan Semester dan Prognosis TA 2026",
+                    "kegiatan_turunan": "Menyiapan bahan dan membantu pelaksanaan rekapitulasi pendapatan dan belanja untuk Saldo Awal TA 2025 Perbaikan",
                     "target_kuantitas": "5",
                     "satuan_kuantitas": "127",
                     "kualitas": "100",
@@ -422,7 +422,7 @@
                 },
                 {
                     "kode": "1.c",
-                    "kegiatan_turunan": "Membantu penyiapan bahan dan pelaksanaan penyelenggaraan akuntansi pendapatan dan belanja serta pengungkapan informasi lainnya sebagai bahan penyusunan Laporan Penjabaran Pertanggungjawaban APBD",
+                    "kegiatan_turunan": "Membantu penyiapan bahan dan pelaksanaan penyelenggaraan akuntansi pendapatan dan belanja serta pengungkapan informasi lainnya sebagai bahan penyusunan Laporan Bulanan",
                     "target_kuantitas": "3",
                     "satuan_kuantitas": "127",
                     "kualitas": "100",
@@ -470,7 +470,7 @@
                 },
                 {
                     "kode": "1.b",
-                    "kegiatan_turunan": "Menyiapan bahan dan membantu pelaksanaan rekapitulasi pendapatan dan belanja untuk Laporan Semester dan Prognosis TA 2026",
+                    "kegiatan_turunan": "Menyiapan bahan dan membantu pelaksanaan rekapitulasi pendapatan dan belanja untuk Laporan perbaikan penyampaian ke SIKD",
                     "target_kuantitas": "5",
                     "satuan_kuantitas": "127",
                     "kualitas": "100",
@@ -479,7 +479,7 @@
                 },
                 {
                     "kode": "1.c",
-                    "kegiatan_turunan": "Membantu penyiapan bahan dan pelaksanaan penyelenggaraan akuntansi pendapatan dan belanja serta pengungkapan informasi lainnya sebagai bahan penyusunan Laporan Penjabaran Pertanggungjawaban APBD",
+                    "kegiatan_turunan": "Membantu penyiapan bahan dan pelaksanaan penyelenggaraan akuntansi pendapatan dan belanja serta pengungkapan informasi lainnya sebagai bahan penyusunan Laporan Bulanan",
                     "target_kuantitas": "3",
                     "satuan_kuantitas": "127",
                     "kualitas": "100",
@@ -527,7 +527,7 @@
                 },
                 {
                     "kode": "1.b",
-                    "kegiatan_turunan": "Menyiapan bahan dan membantu pelaksanaan rekapitulasi pendapatan dan belanja untuk Laporan Semester dan Prognosis TA 2026",
+                    "kegiatan_turunan": "Menyiapan bahan dan membantu pelaksanaan rekapitulasi pendapatan dan belanja per SKPD untuk Laporan perbaikan penyampaian ke SIKD dan Laporan Konsolidasi",
                     "target_kuantitas": "5",
                     "satuan_kuantitas": "127",
                     "kualitas": "100",
@@ -536,7 +536,7 @@
                 },
                 {
                     "kode": "1.c",
-                    "kegiatan_turunan": "Membantu penyiapan bahan dan pelaksanaan penyelenggaraan akuntansi pendapatan dan belanja serta pengungkapan informasi lainnya sebagai bahan penyusunan Laporan Penjabaran Pertanggungjawaban APBD",
+                    "kegiatan_turunan": "Membantu penyiapan bahan dan pelaksanaan penyelenggaraan akuntansi pendapatan dan belanja serta pengungkapan informasi lainnya sebagai bahan penyusunan Laporan Bulanan",
                     "target_kuantitas": "3",
                     "satuan_kuantitas": "127",
                     "kualitas": "100",
@@ -584,7 +584,7 @@
                 },
                 {
                     "kode": "1.b",
-                    "kegiatan_turunan": "Menyiapan bahan dan membantu pelaksanaan rekapitulasi pendapatan dan belanja untuk Laporan Semester dan Prognosis TA 2026",
+                    "kegiatan_turunan": "Menyiapan bahan dan membantu pelaksanaan rekapitulasi pendapatan dan belanja per SKPD untuk Laporan perbaikan penyampaian ke SIKD dan Laporan Konsolidasi",
                     "target_kuantitas": "5",
                     "satuan_kuantitas": "127",
                     "kualitas": "100",
@@ -593,7 +593,7 @@
                 },
                 {
                     "kode": "1.c",
-                    "kegiatan_turunan": "Membantu penyiapan bahan dan pelaksanaan penyelenggaraan akuntansi pendapatan dan belanja serta pengungkapan informasi lainnya sebagai bahan penyusunan Laporan Penjabaran Pertanggungjawaban APBD",
+                    "kegiatan_turunan": "Membantu penyiapan bahan dan pelaksanaan penyelenggaraan akuntansi pendapatan dan belanja serta pengungkapan informasi lainnya sebagai bahan penyusunan Laporan Bulanan",
                     "target_kuantitas": "3",
                     "satuan_kuantitas": "127",
                     "kualitas": "100",
@@ -641,7 +641,7 @@
                 },
                 {
                     "kode": "1.b",
-                    "kegiatan_turunan": "Menyiapan bahan dan membantu pelaksanaan rekapitulasi pendapatan dan belanja untuk Laporan Semester dan Prognosis TA 2026",
+                    "kegiatan_turunan": "Menyiapan bahan dan membantu pelaksanaan rekapitulasi pendapatan dan belanja per SKPD untuk Laporan perbaikan penyampaian ke SIKD dan Laporan Konsolidasi",
                     "target_kuantitas": "5",
                     "satuan_kuantitas": "127",
                     "kualitas": "100",
@@ -650,7 +650,7 @@
                 },
                 {
                     "kode": "1.c",
-                    "kegiatan_turunan": "Membantu penyiapan bahan dan pelaksanaan penyelenggaraan akuntansi pendapatan dan belanja serta pengungkapan informasi lainnya sebagai bahan penyusunan Laporan Penjabaran Pertanggungjawaban APBD",
+                    "kegiatan_turunan": "Membantu penyiapan bahan dan pelaksanaan penyelenggaraan akuntansi pendapatan dan belanja serta pengungkapan informasi lainnya sebagai bahan penyusunan Laporan Bulanan",
                     "target_kuantitas": "3",
                     "satuan_kuantitas": "127",
                     "kualitas": "100",

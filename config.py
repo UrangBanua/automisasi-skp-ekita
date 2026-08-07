@@ -24,6 +24,8 @@ ENDPOINTS = {
     "aksi_turunan":       "/c_user/aksi_turunan_skp",
     "get_target_bulan":   "/c_user/get_target_bulan",
     "aksi_harian":        "/c_user/aksi_harian_skp",
+    "hapus_harian":       "/c_user/hapus_harian",
+    "hapus_bulanan":      "/c_user/hapus_bulanan_skp",
     "harian_ajax":        "/c_harian_skp/ajax",
 }
 

@@ -223,6 +223,11 @@ class EkitaClient:
         resp = self._post("hapus_harian", raw=f"id={id_skp}")
         return resp.status_code == 200
 
+    def hapus_bulanan(self, id_skp):
+        """POST /c_user/hapus_bulanan_skp."""
+        resp = self._post("hapus_bulanan", raw=f"id={id_skp}")
+        return resp.status_code == 200
+
     # ── 11. READ list SKP Harian ─────────────────────────────
 
     def get_list_harian(self, bulan, tahun):
