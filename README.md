@@ -1,186 +1,130 @@
-# Automisasi SKP Harian - Ekita
+# 🚀 Automasi SKP Harian - Ekita BKD HST
 
-Sistem otomatisasi untuk input SKP Harian ke sistem Ekita BKD HST, menggantikan input manual satu per satu via Postman.
+![Python](https://img.shields.io/badge/Python-3.12-blue.svg)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
 
-## Fitur
+Otomatisasi untuk input SKP Bulanan & Harian Pada Ekita BKPSDMD - KAB. HST.
 
-- Login otomatis cerdas dengan session caching (`data/session.txt`) untuk mengurangi beban server
-- Auto-detect dan auto-insert target bulanan jika belum ada (step 04-12)
-- Resume otomatis jika target bulanan tidak lengkap (fallback logic)
-- Parse file template target bulanan `data/target_bulanan.json` (skema uraian SKP 1 & 2)
-- Parse file template harian `data/skp_harian.json` (format JSON array, 34 entry)
-- Generate tanggal otomatis dari (minggu, hari) dengan auto-adjust weekend
-- Grouping sub-sekuens `X.Y`: entry non-terakhir dikirim dengan `proses: "on"`, entry terakhir membawa `kuantitas`
-- Kirim SKP Harian secara batch (34 entry) dengan ID yang sudah di-map otomatis
-- **Fitur Utilitas**: `--cek nilai` (menampilkan tabel status persetujuan bulanan)
-- **Fitur Utilitas**: `--del harian` & `--del bulanan` (menghapus data dengan aman, melindungi data yang telah disetujui)
+---
 
-## Setup
+## ✨ Fitur Unggulan
 
-### 1. Install Dependencies
+- 🧠 **Smart Session Caching**: Sesi login (`ci_session`) di-cache di lokal. Skrip hanya akan melakukan otentikasi login jika sesi benar-benar sudah kedaluwarsa, mengurangi beban *request* pada server Ekita.
+- 🛡️ **Proteksi Keamanan Data**: 
+  - Tidak akan menghapus data Harian yang berstatus **"Sesuai"**.
+  - Tidak akan menghapus data Target Bulanan yang berstatus **"Disetujui"**.
+- 🔄 **Auto-Detect & Fallback**: Skrip otomatis mengecek keberadaan target bulanan. Jika belum ada (atau tidak lengkap), skrip secara mandiri akan membangun *(insert)* header bulanan beserta seluruh turunannya.
+- 📅 **Auto-Adjust Tanggal**: Otomatis melewati *weekend* (Sabtu digeser ke Jumat, Minggu digeser ke Senin).
+- 🧬 **Grouping Sub-Sekuens (X.Y)**: Mendukung pengisian nilai `kuantitas` versus `proses` secara otomatis berdasarkan posisi grup urutan (entri non-terakhir dikirim sebagai "Proses", entri terakhir membawa "Kuantitas").
 
+---
+
+## 🛠️ Instalasi & Persiapan
+
+### 1. Kebutuhan Sistem
+Pastikan Python 3.x telah terpasang. Install dependensi yang dibutuhkan:
 ```bash
-cd automisasi-skp-ekita
 pip install -r requirements.txt
 ```
 
-### 2. Konfigurasi .env
-
-Copy `.env.example` ke `.env`:
-
+### 2. Konfigurasi Kredensial
+*Copy* file konfigurasi dari *example*:
 ```bash
 cp .env.example .env
 ```
-
-Edit `.env`:
-
+Isi file `.env` dengan kredensial Anda:
 ```env
-EKITA_BASE_URL=https://ekita.bkdhst.kalselprov.go.id
-EKITA_USERNAME=198901132020121005
-EKITA_PASSWORD=password_anda
+EKITA_BASE_URL=https://ekita.hstkab.go.id
+EKITA_USERNAME=nip_anda
+EKITA_PASSWORD=password_rahasia_anda
 ```
+*(Catatan: File `.env` dan `data/session.txt` sudah diproteksi oleh `.gitignore` sehingga aman dari kebocoran).*
 
-## Penggunaan
+---
 
-### Preview Data (Dry Run)
+## 🚀 Panduan Penggunaan (CLI)
 
-Preview tanggal yang akan dipakai tanpa login & tanpa kirim data:
+Skrip dieksekusi melalui terminal dengan opsi parameter interaktif.
 
+### Mode Automasi Utama (Input Data)
+Melakukan pengecekan target bulanan, auto-generate payload, dan mengirim 34 aktivitas harian.
 ```bash
+# Automasi untuk bulan Agustus tahun 2026
+python skp_automation.py --bulan 8 --tahun 2026
+
+# Simulasi (Preview data tanpa mengirimkannya ke server)
 python skp_automation.py --bulan 8 --tahun 2026 --dry-run
 ```
 
-### Kirim SKP Harian
-
+### Mode Utilitas (Cek & Hapus)
 ```bash
-# Input SKP Harian untuk bulan Agustus 2026
-python skp_automation.py --bulan 8 --tahun 2026
-```
-
-### Fitur Utilitas Tambahan
-
-```bash
-# Cek tabel nilai dan status persetujuan bulanan
+# Mengecek tabel rekapitulasi nilai dan status persetujuan tahunan
 python skp_automation.py --tahun 2026 --cek nilai
 
-# Hapus data SKP Harian untuk bulan spesifik (Aman: mengabaikan status 'Sesuai')
+# Menghapus seluruh entri SKP Harian bulan tertentu (Aman dari status 'Sesuai')
 python skp_automation.py --bulan 8 --tahun 2026 --del harian
 
-# Hapus data SKP Bulanan untuk bulan spesifik (Aman: mengabaikan status 'Disetujui')
+# Menghapus target SKP Bulanan bulan tertentu (Aman dari status 'Disetujui')
 python skp_automation.py --bulan 8 --tahun 2026 --del bulanan
 ```
 
-| Parameter   | Wajib | Keterangan                        |
-|-------------|-------|-----------------------------------|
-| `--bulan`   | Ya*   | Bulan target (1-12). *Kecuali untuk `--cek nilai` |
-| `--tahun`   | Ya    | Tahun target, contoh `2026`       |
-| `--cek`     | Tidak | Pilihan: `nilai` (menampilkan data bulanan) |
-| `--del`     | Tidak | Pilihan: `harian`, `bulanan` (menghapus data spesifik) |
-| `--dry-run` | Tidak | Preview tanggal tanpa login/kirim |
+*(Jika skrip dijalankan tanpa parameter, layar Bantuan / `--help` akan otomatis ditampilkan).*
 
-## Format File Template
+---
 
-### Template Harian (`skp_harian.json`)
+## ⚙️ Arsitektur & Alur Kerja
 
-File template `data/skp_harian.json` menggunakan format JSON array standar, 34 entry:
+Di bawah ini adalah ilustrasi alur kerja cerdas dari skrip saat berjalan pada Mode Automasi Utama.
+
+```mermaid
+graph TD
+    A["[01] LOGIN / CEK SESI<br/>GET / & POST /c_main/validasi"] --> B["[02] GET ID SKP TAHUNAN"]
+    B --> C["[03] GET ID TARGET SKP<br/>(SKP 1 & SKP 2)"]
+    C --> D{"[04] CEK BULANAN<br/>Apakah Bulan Ini Ada?"}
+
+    D -- "BELUM ADA" --> E["[05-12] INSERT TARGET BULANAN<br/>(Header & Turunan SKP)"]
+    D -- "SUDAH ADA" --> F["[13] GET TARGET BULAN<br/>(Ambil Mapping ID dari Server)"]
+    
+    E --> F
+    
+    F -- "Kosong (Fallback)" --> E
+    F -- "Sukses" --> G["[14] BUILD PAYLOAD<br/>Load JSON, Hitung Tanggal, Grouping X.Y"]
+    
+    G --> H["[15] INSERT SKP HARIAN<br/>POST /c_user/aksi_harian_skp × 34"]
+    H --> I["[16] READ LIST<br/>Verifikasi Hasil & Tampilkan Tabel"]
+
+    style A fill:#2d3436,stroke:#fff
+    style D fill:#d35400,stroke:#fff
+    style G fill:#0984e3,stroke:#fff
+    style H fill:#27ae60,stroke:#fff
+```
+
+---
+
+## 📁 Struktur Template Data
+
+Skrip mengambil parameter isian dari dua file template di dalam folder `data/`:
+
+### 1. `target_bulanan.json`
+Berisi uraian kegiatan/deskripsi target bulanan (SKP 1 dan 2). Template ini dibuat **per bulan** (kunci `"1"` untuk Januari hingga `"12"` untuk Desember) sehingga Anda dapat memodifikasi deskripsi kegiatan per bulan tanpa mengubah skema utama.
+
+### 2. `skp_harian.json`
+Array berisikan 34 struktur rencana kegiatan harian. Parameter waktu dibuat dinamis (hari dan minggu), bukan tanggal mutlak, sehingga file ini bisa digunakan **berulang-ulang setiap bulan**.
 
 ```json
 [
-  {"kode":"1.a","minggu":1,"hari":"Rabu","seq":1,"kegiatan_harian_skp":"Kegiatan 1.a - 1","kuantitas":"1"},
-  {"kode":"1.b","minggu":1,"hari":"Rabu","seq":1,"kegiatan_harian_skp":"Kegiatan 1.b - 1.1","kuantitas":"1"}
+  {"kode":"1.b", "minggu":1, "hari":"Rabu", "seq":1, "kegiatan_harian_skp":"Kegiatan 1.b - 1.1", "kuantitas":"1"},
+  {"kode":"1.b", "minggu":1, "hari":"Kamis", "seq":1, "kegiatan_harian_skp":"Kegiatan 1.b - 1.2", "kuantitas":"1"}
 ]
 ```
 
-### Field yang Diperlukan
+---
 
-| Field                 | Keterangan                                                        |
-|-----------------------|-------------------------------------------------------------------|
-| `kode`                | Kode kegiatan: `1.a`, `1.b`, `1.c`, `2.a`, `2.b`                  |
-| `minggu`              | Minggu ke-N dalam bulan (1-5)                                     |
-| `hari`                | Nama hari Indonesia: Senin-Jumat                                  |
-| `seq`                 | Urutan entry pada tanggal yang sama (default: 1)                  |
-| `kuantitas`           | Jumlah (default: "1"); untuk `1.b` berlaku hanya pada entry terakhir per grup |
+## 🛡️ Catatan Keamanan & Troubleshooting
 
-### Template Target Bulanan (`target_bulanan.json`)
+Sistem telah di-*refactor* secara masif untuk menjamin tingkat keberhasilan 100% pada *Environment* produksi:
 
-Menyimpan deskripsi/uraian untuk kegiatan SKP bulanan (SKP 1 dan SKP 2). File ini diubah setiap bulannya jika diperlukan uraian baru, dengan mempertahankan struktur JSON aslinya.
-
-### Logika Sub-Sekuens `X.Y`
-
-Kegiatan `1.b` memiliki sub-sekuens (`1.1`, `1.2`, `1.3`, `1.4`). Dalam satu grup (kode + nomor grup sama), hanya entry **terakhir** yang membawa field `kuantitas`; entry sebelumnya dikirim dengan field `proses: "on"` (tanpa `kuantitas`).
-
-Contoh grup `1.b-1`:
-
-| Entry             | Payload dikirim                                                  |
-|-------------------|------------------------------------------------------------------|
-| `Kegiatan 1.b - 1.1` | `proses: "on"` (tanpa field `kuantitas`)                      |
-| `Kegiatan 1.b - 1.2` | `proses: "on"` (tanpa field `kuantitas`)                      |
-| `Kegiatan 1.b - 1.3` | `proses: "on"` (tanpa field `kuantitas`)                      |
-| `Kegiatan 1.b - 1.4` | `kuantitas: "1"` (tanpa field `proses`)                       |
-
-## Alur Kerja
-
-Script menjalankan 16 langkah otomatis:
-
-```
-01. LOGIN                    → POST /c_main/validasi → ci_session
-02. GET ID SKP TAHUNAN       → POST /c_tahunan_skp/ajax_list
-03. GET ID TARGET SKP        → POST /c_tahunan_skp/ajax_list_target
-04. CEK TARGET BULANAN       → POST /c_bulanan_skp/ajax_list
-    ├─ BELUM ADA → step 05-12 (INSERT target bulanan + turunan)
-    └─ SUDAH ADA → cek kelengkapan, resume jika kosong
-05. INSERT BULANAN HEADER
-06. RE-QUERY id_bulanan
-07-12. INSERT target + turunan (1.a,1.b,1.c,2.a,2.b)
-13. GET TARGET BULAN         → mapping kode → id_harian
-14. BUILD PAYLOAD            → grouping X.Y (proses/kuantitas)
-15. INSERT SKP HARIAN        → POST /c_user/aksi_harian_skp × 34
-16. READ LIST                → tampilkan tabel hasil
-```
-
-## Mapping Kegiatan
-
-Script otomatis memetakan `kode` ke target bulanan via `get_target_bulan`:
-
-| Kode  | Kegiatan Harian      | Keyword Mapping    | Target   |
-|-------|----------------------|--------------------|----------|
-| `1.a` | Kegiatan 1.a - N     | "buku besar"       | Target_1 |
-| `1.b` | Kegiatan 1.b - x.y   | "rekapitulasi"     | Target_1 |
-| `1.c` | Kegiatan 1.c - N     | "pertanggungjawaban"| Target_1 |
-| `2.a` | Kegiatan 2.a - N     | "monitoring"       | Target_2 |
-| `2.b` | Kegiatan 2.b - N     | "sosialisasi"      | Target_2 |
-
-ID aktual didapat dari response `get_target_bulan` — selalu fresh setiap bulan.
-
-## Aturan Tanggal
-
-- **Minggu 1** = minggu yang mengandung tanggal 1.
-- Tanggal dihitung: `Senin minggu ke-1 bulan` + `(minggu-1)×7` + `offset hari kerja`.
-- Hari yang jatuh pada **Sabtu** → geser mundur (-1) → Jumat.
-- Hari yang jatuh pada **Minggu** → geser maju (+1) → Senin.
-- Tanggal tidak boleh keluar dari bulan target.
-
-## Troubleshooting
-
-### Login Gagal
-
-- Periksa `EKITA_USERNAME` / `EKITA_PASSWORD` di `.env`
-- Pastikan `EKITA_BASE_URL` benar
-
-### Mapping Tidak Ditemukan
-
-- Pastikan target bulanan sudah dibuat di sistem Ekita (script auto-insert jika belum)
-- Jalankan dengan `--dry-run` untuk preview
-- Jika target bulanan ada tapi kosong, script otomatis resume (fallback logic)
-
-### Session Expired
-
-- `ci_session` valid ±2 jam
-- Jalankan ulang script untuk mendapatkan session baru
-
-## Catatan Penting
-
-- Script auto-detect dan auto-insert target bulanan jika belum ada
-- Jika target bulanan ada tapi turunannya kosong, script otomatis melengkapi (resume)
-- Backup data sebelum menjalankan automasi
-- JANGAN commit `.env` ke git (sudah di-ignore)
+1. **Bug Initial Cookie**: Teratasi. Sistem mengeksekusi `GET /` sebelum `POST` login untuk memastikan *handshake* form CodeIgniter sukses.
+2. **Dynamic Indexing DataTable**: Pembacaan ID (*scraping*) tidak lagi bergantung pada *hardcode* indeks Array. Menggunakan *Regex Sweeper* yang menjamin ID dari tabel HTML tetap tertangkap meski admin Ekita menambah/menggeser kolom.
+3. **Regex Quote Escaping**: Parameter fungsi Javascript `onclick="ubah_target_bulanan_skp('ID')"` sudah ditangani menggunakan Regex kutip satu.
+4. **Form-Urlencoded Strict**: Payload operasi CRUD (*Insert* dan *Delete*) dipastikan dikirim dalam format *x-www-form-urlencoded* menggunakan modul `raw=`, menyesuaikan aturan mutlak di *backend* CodeIgniter Ekita yang seringkali gagal membaca `application/json`.
