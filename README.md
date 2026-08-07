@@ -4,14 +4,16 @@ Sistem otomatisasi untuk input SKP Harian ke sistem Ekita BKD HST, menggantikan 
 
 ## Fitur
 
-- Login otomatis dengan session management (`ci_session`)
+- Login otomatis cerdas dengan session caching (`data/session.txt`) untuk mengurangi beban server
 - Auto-detect dan auto-insert target bulanan jika belum ada (step 04-12)
 - Resume otomatis jika target bulanan tidak lengkap (fallback logic)
 - Parse file template target bulanan `data/target_bulanan.json` (skema uraian SKP 1 & 2)
-- Parse file template harian `data/skp_harian.jsonl` (format JSONL, 34 entry)
+- Parse file template harian `data/skp_harian.json` (format JSON array, 34 entry)
 - Generate tanggal otomatis dari (minggu, hari) dengan auto-adjust weekend
 - Grouping sub-sekuens `X.Y`: entry non-terakhir dikirim dengan `proses: "on"`, entry terakhir membawa `kuantitas`
 - Kirim SKP Harian secara batch (34 entry) dengan ID yang sudah di-map otomatis
+- **Fitur Utilitas**: `--cek nilai` (menampilkan tabel status persetujuan bulanan)
+- **Fitur Utilitas**: `--del harian` & `--del bulanan` (menghapus data dengan aman, melindungi data yang telah disetujui)
 
 ## Setup
 
@@ -55,22 +57,38 @@ python skp_automation.py --bulan 8 --tahun 2026 --dry-run
 python skp_automation.py --bulan 8 --tahun 2026
 ```
 
+### Fitur Utilitas Tambahan
+
+```bash
+# Cek tabel nilai dan status persetujuan bulanan
+python skp_automation.py --tahun 2026 --cek nilai
+
+# Hapus data SKP Harian untuk bulan spesifik (Aman: mengabaikan status 'Sesuai')
+python skp_automation.py --bulan 8 --tahun 2026 --del harian
+
+# Hapus data SKP Bulanan untuk bulan spesifik (Aman: mengabaikan status 'Disetujui')
+python skp_automation.py --bulan 8 --tahun 2026 --del bulanan
+```
+
 | Parameter   | Wajib | Keterangan                        |
 |-------------|-------|-----------------------------------|
-| `--bulan`   | Ya    | Bulan target (1-12)               |
+| `--bulan`   | Ya*   | Bulan target (1-12). *Kecuali untuk `--cek nilai` |
 | `--tahun`   | Ya    | Tahun target, contoh `2026`       |
+| `--cek`     | Tidak | Pilihan: `nilai` (menampilkan data bulanan) |
+| `--del`     | Tidak | Pilihan: `harian`, `bulanan` (menghapus data spesifik) |
 | `--dry-run` | Tidak | Preview tanggal tanpa login/kirim |
 
 ## Format File Template
 
-### Template Harian (`skp_harian.jsonl`)
+### Template Harian (`skp_harian.json`)
 
-
-File template `data/skp_harian.jsonl` menggunakan format JSON per baris (JSONL), 34 entry:
+File template `data/skp_harian.json` menggunakan format JSON array standar, 34 entry:
 
 ```json
-{"kode":"1.a","minggu":1,"hari":"Rabu","seq":1,"kegiatan_harian_skp":"Kegiatan 1.a - 1","kuantitas":"1"}
-{"kode":"1.b","minggu":1,"hari":"Rabu","seq":1,"kegiatan_harian_skp":"Kegiatan 1.b - 1.1","kuantitas":"1"}
+[
+  {"kode":"1.a","minggu":1,"hari":"Rabu","seq":1,"kegiatan_harian_skp":"Kegiatan 1.a - 1","kuantitas":"1"},
+  {"kode":"1.b","minggu":1,"hari":"Rabu","seq":1,"kegiatan_harian_skp":"Kegiatan 1.b - 1.1","kuantitas":"1"}
+]
 ```
 
 ### Field yang Diperlukan

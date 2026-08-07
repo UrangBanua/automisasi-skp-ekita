@@ -11,11 +11,15 @@ cd /opt/data/workspace/projects/automisasi-skp-ekita
 ./venv/bin/python skp_automation.py --bulan 8 --tahun 2026
 ```
 
-| Parameter   | Wajib | Keterangan                  |
-|-------------|-------|-----------------------------|
-| `--bulan`   | Ya    | Bulan target (1–12)         |
-| `--tahun`   | Ya    | Tahun target, contoh `2026` |
-| `--dry-run` | Tidak | Preview tanggal tanpa login |
+| Parameter   | Wajib | Keterangan                        |
+|-------------|-------|-----------------------------------|
+| `--bulan`   | Ya*   | Bulan target (1–12). *Kecuali untuk `--cek nilai` |
+| `--tahun`   | Ya    | Tahun target, contoh `2026`       |
+| `--cek`     | Tidak | Pilihan: `nilai` (tampilkan data bulanan) |
+| `--del`     | Tidak | Pilihan: `harian`, `bulanan` (hapus data dengan aman) |
+| `--dry-run` | Tidak | Preview tanggal tanpa login/kirim |
+
+Jika dijalankan tanpa parameter, skrip akan menampilkan **Bantuan (--help)**.
 
 ```bash
 # Preview saja (cara aman)
@@ -75,7 +79,7 @@ cd /opt/data/workspace/projects/automisasi-skp-ekita
                ▼
 ┌───────────────────────────────────────────────────────────────┐
 │ 14. GENERATE TANGGAL & BUILD PAYLOAD                          │
-│     Baca template data/skp_harian.jsonl (34 entry)            │
+│     Baca template data/skp_harian.json (34 entry)             │
 │     Tanggal auto-adjust weekend                               │
 │     Grouping X.Y: entry non-terakhir → proses="on"            │
 │     entry terakhir per grup → kuantitas dari template         │
@@ -110,7 +114,7 @@ cd /opt/data/workspace/projects/automisasi-skp-ekita
 ---
 
 ## 4. Mapping Template → Kegiatan
-Template `skp_harian.jsonl` berisi 34 entry dengan atribut `kode`, `minggu`, `hari`, `seq`, `kegiatan_harian_skp`, `kuantitas`.
+Template `skp_harian.json` berisi 34 entry dengan atribut `kode`, `minggu`, `hari`, `seq`, `kegiatan_harian_skp`, `kuantitas`.
 
 | `kode` | Kegiatan Harian      | Target   |
 |--------|----------------------|----------|
@@ -161,7 +165,7 @@ automisasi-skp-ekita/
 ├── api_client.py        # Client HTTP (login, CRUD SKP)
 ├── skp_automation.py    # Script utama (argumen --bulan --tahun)
 ├── data/
-│   ├── skp_harian.jsonl     # Template SKP harian (34 entry)
+│   ├── skp_harian.json      # Template SKP harian (34 entry, standar JSON)
 │   └── target_bulanan.json  # Template target bulanan (uraian SKP 1 & 2)
 ├── docs/
 │   ├── project_plan.md  # Dokumen rencana

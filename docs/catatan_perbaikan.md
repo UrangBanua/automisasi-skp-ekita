@@ -29,3 +29,13 @@ Dokumen ini mencatat perbaikan bug dan peningkatan stabilitas sistem (berdasarka
   - Entry terakhir: tetap membawa `kuantitas` dari template (tidak ada field `proses`).
 - **Perbaikan (`api_client.py`):** Method `insert_harian` kini mengirim field secara eksklusif — jika `proses` ada, kirim `proses` tanpa `kuantitas`; jika tidak, kirim `kuantitas` tanpa `proses`.
 - **Hasil verifikasi:** 34/34 entry sukses pada real-run Agustus 2026; 15 entry `proses` + 19 entry `kuantitas`. Server menampilkan kolom Kuantitas kosong (hanya satuan "Kegiatan") untuk entry `proses: on`.
+
+## 7. Penambahan Fitur Ekstra & Keamanan (Agustus 2026)
+- **Session Caching**: Skrip sekarang tidak lagi memanggil *login POST* secara membabi buta. Sesi (`ci_session`) disimpan sementara di dalam `data/session.txt`. Sebelum *login*, skrip akan me-*ping* server untuk menguji apakah sesi tersebut masih hidup; jika masih aktif, *login POST* akan dilewati demi menghemat performa server Ekita dan waktu pengguna.
+- **Perubahan Ekstensi JSON**: Format `skp_harian.jsonl` (JSON *per lines*) resmi diubah ke format array murni `skp_harian.json` agar selaras dengan file `target_bulanan.json`. Fungsi `load_template()` telah disederhanakan menggunakan metode standar `json.load()`.
+- **Fitur `--cek nilai`**: Ditambahkan argumen `--cek choices=["nilai"]` untuk melihat hasil *real-time* skor bulanan serta status persetujuannya langsung melalui terminal tanpa masuk ke browser.
+- **Fitur Penghapusan Aman (`--del harian` & `--del bulanan`)**:
+  - **Hapus Selektif**: Diakomodir lewat parameter opsional `--del`.
+  - **Mekanisme Pelindung ("Sesuai" / "Disetujui")**: Mengatasi risiko terhapusnya data yang telah diterima oleh admin, skrip akan melakuan verifikasi teks HTML pada kolom *Status Kesesuaian*. Jika baris mengandung status **"Sesuai"** (untuk *harian*) atau **"Disetujui"** (untuk *bulanan*), baris tersebut akan dilewati (*skipped*). Hanya data berstatus kosong atau belum disetujui yang ditembak dengan POST *hapus*.
+- **Pembenahan Payload Hapus**: Memperbaiki jenis konten HTTP request di dalam `api_client.py` agar aksi penghapusan mematuhi standar *CodeIgniter* Ekita, yakni *x-www-form-urlencoded* (melalui pengiriman `raw="id=XXXX"`).
+- **Antarmuka (CLI) Cerdas**: Penerapan *fallback argument* jika argumen wajib tidak ada. Menjalankan skrip tanpa parameter kini otomatis memunculkan teks `help`. Parameter `--bulan` dinamis berubah menjadi opsional khusus untuk kasus eksekusi `--cek nilai`.
