@@ -1,6 +1,7 @@
 """
 API Client untuk Ekita BKD HST
 """
+import os
 import re
 import json
 import requests
@@ -22,6 +23,13 @@ class EkitaClient:
         self.session = requests.Session()
         self.session.headers.update(HEADERS)
         self.ci_session = None
+        session_file = "data/session.txt"
+        if os.path.exists(session_file):
+            with open(session_file, "r", encoding="utf-8") as f:
+                val = f.read().strip()
+                if val:
+                    self.ci_session = val
+                    self.session.cookies.set("ci_session", val)
 
     # ── helpers ──────────────────────────────────────────────
 
@@ -51,7 +59,18 @@ class EkitaClient:
 
     # ── 01. Login ────────────────────────────────────────────
 
+    def is_session_valid(self):
+        """Cek apakah session saat ini valid (tidak dilempar ke form login)."""
+        if not self.ci_session:
+            return False
+        resp = self.session.get(BASE_URL)
+        return not ('name="username"' in resp.text)
+
     def login(self, username, password):
+        # Jika session sudah valid, batalkan login ulang
+        if self.is_session_valid():
+            return True
+
         # Dapatkan initial session cookie dulu (GET /)
         self.session.get(BASE_URL)
         resp = self.session.post(
@@ -59,8 +78,11 @@ class EkitaClient:
             data={"username": username, "password": password},
         )
         self._update_cookie(resp)
+        if self.ci_session:
+            os.makedirs("data", exist_ok=True)
+            with open("data/session.txt", "w", encoding="utf-8") as f:
+                f.write(self.ci_session)
         return self.ci_session is not None
-
     # ── 02. Get id_tahunan ───────────────────────────────────
 
     def get_id_tahunan(self, tahun):
@@ -194,6 +216,11 @@ class EkitaClient:
         else:
             data["kuantitas"] = entry["kuantitas"]
         resp = self._post("aksi_harian", data=data)
+        return resp.status_code == 200
+
+    def hapus_harian(self, id_skp):
+        """POST /c_user/hapus_harian."""
+        resp = self._post("hapus_harian", raw=f"id={id_skp}")
         return resp.status_code == 200
 
     # ── 11. READ list SKP Harian ─────────────────────────────
