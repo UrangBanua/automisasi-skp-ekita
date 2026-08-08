@@ -194,6 +194,7 @@ def buat_target_bulanan(client, id_bulanan, target_skp_1, target_skp_2, turunan_
 
     # 10. Insert target 2
     print("[10] Insert target bulanan SKP 2...")
+    client.insert_target_bulanan(id_bulanan, target_skp_2, turunan_skp["2"]["target_waktu"])
     tb_ids_2 = client.get_target_bulanan_ids(id_bulanan)
     if len(tb_ids_2) < 2:
         print(f"[ERROR] target bulanan 2 tidak ditemukan: {tb_ids_2}")
