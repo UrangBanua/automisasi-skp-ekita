@@ -62,6 +62,12 @@ python skp_automation.py --bulan 8 --tahun 2026 --dry-run
 # Mengecek tabel rekapitulasi nilai dan status persetujuan tahunan
 python skp_automation.py --tahun 2026 --cek nilai
 
+# Mengecek Rincian Target Bulanan yang sudah dibuat
+python skp_automation.py --bulan 8 --tahun 2026 --cek bulanan
+
+# Mengecek Daftar SKP Harian yang sudah diinput
+python skp_automation.py --bulan 8 --tahun 2026 --cek harian
+
 # Menghapus seluruh entri SKP Harian bulan tertentu (Aman dari status 'Sesuai')
 python skp_automation.py --bulan 8 --tahun 2026 --del harian
 

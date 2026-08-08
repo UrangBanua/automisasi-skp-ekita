@@ -143,6 +143,27 @@ def print_harian(html):
             print(f"{c[0]:>4} | {c[1]:<12} | {c[2]:<22} | {c[3][:50]:<50} | {c[4]:<10} | {c[5] if len(c) > 5 else ''}")
     print("-" * 110)
     print(f"Total: {count} baris")
+def print_target_bulanan(html):
+    """Parse HTML target bulanan → print tabel text."""
+    print()
+    print("=" * 110)
+    print("DAFTAR SKP TARGET BULANAN")
+    print("=" * 110)
+    print(f"{'No':>4} | {'Kegiatan Bulanan':<70} | {'Kuantitas':<10} | {'Waktu'}")
+    print("-" * 110)
+    
+    rows = re.findall(r'<tr[^>]*>(.*?)</tr>', html, re.DOTALL | re.IGNORECASE)
+    count = 0
+    # Skip header
+    for r in rows:
+        c = cell_values(r)
+        if len(c) >= 7 and c[0].strip().lower() != 'no':
+            count += 1
+            kegiatan = c[2][:70] if len(c[2]) > 70 else c[2]
+            print(f"{c[0]:>4} | {kegiatan:<70} | {c[4]:<10} | {c[6]}")
+    print("-" * 110)
+    print(f"Total: {count} baris")
+
 
 
 # ──────────────────────────────────────────────────────────────
@@ -173,7 +194,6 @@ def buat_target_bulanan(client, id_bulanan, target_skp_1, target_skp_2, turunan_
 
     # 10. Insert target 2
     print("[10] Insert target bulanan SKP 2...")
-    client.insert_target_bulanan(id_bulanan, target_skp_2, turunan_skp["2"]["target_waktu"])
     tb_ids_2 = client.get_target_bulanan_ids(id_bulanan)
     if len(tb_ids_2) < 2:
         print(f"[ERROR] target bulanan 2 tidak ditemukan: {tb_ids_2}")
@@ -194,7 +214,7 @@ def main():
     parser = argparse.ArgumentParser(description="Automasi SKP Bulanan & Harian - Ekita Kab. HST")
     parser.add_argument("--bulan", type=int, required=False, help="Bulan (1-12)")
     parser.add_argument("--tahun", type=int, required=True, help="Tahun, contoh 2026")
-    parser.add_argument("--cek", choices=["nilai"], help="Cek data bulanan (misal: nilai)")
+    parser.add_argument("--cek", choices=["nilai", "bulanan", "harian"], help="Cek data bulanan (misal: nilai)")
     parser.add_argument("--del", dest="delete_target", choices=["harian", "bulanan"], help="Hapus data spesifik (harian / bulanan)")
     parser.add_argument("--dry-run", action="store_true", help="Preview tanpa kirim & tanpa login")
 
@@ -213,6 +233,41 @@ def main():
             print("[ERROR] --bulan harus 1-12")
             sys.exit(1)
 
+
+    if args.cek == "harian":
+        if not args.bulan:
+            sys.exit("[ERROR] --bulan wajib diisi untuk --cek harian")
+        if not USERNAME or not PASSWORD:
+            sys.exit("[ERROR] EKITA_USERNAME/EKITA_PASSWORD belum diatur di .env")
+        client = EkitaClient()
+        if not client.login(USERNAME, PASSWORD):
+            sys.exit("[ERROR] Login gagal")
+        
+        bulan_str = BULAN_NAMA.get(args.bulan, str(args.bulan))
+        print(f"\n[CEK HARIAN] Mengambil data harian {bulan_str} {args.tahun}...")
+        html = client.get_list_harian(args.bulan, args.tahun)
+        print_harian(html)
+        sys.exit(0)
+
+    if args.cek == "bulanan":
+        if not args.bulan:
+            sys.exit("[ERROR] --bulan wajib diisi untuk --cek bulanan")
+        if not USERNAME or not PASSWORD:
+            sys.exit("[ERROR] EKITA_USERNAME/EKITA_PASSWORD belum diatur di .env")
+        client = EkitaClient()
+        if not client.login(USERNAME, PASSWORD):
+            sys.exit("[ERROR] Login gagal")
+        
+        bulan_str = BULAN_NAMA.get(args.bulan, str(args.bulan))
+        print(f"\n[CEK BULANAN] Mengambil data bulanan {bulan_str} {args.tahun}...")
+        id_bulanan = client.cek_bulanan(args.tahun, bulan_str)
+        if not id_bulanan:
+            print("Tidak ada target bulanan.")
+            sys.exit(0)
+            
+        resp = client._get("target_bulanan_page", f"/{id_bulanan}")
+        print_target_bulanan(resp.text)
+        sys.exit(0)
     # Mode Cek Nilai
     if args.cek == "nilai":
         if not USERNAME or not PASSWORD:
