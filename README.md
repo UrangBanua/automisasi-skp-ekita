@@ -106,6 +106,36 @@ graph TD
     style H fill:#27ae60,stroke:#fff
 ```
 
+### Alur Kerja Mode Utilitas (Cek & Hapus)
+
+Diagram ini mengilustrasikan alur pemanggilan data dan mekanisme **proteksi keamanan** (Safety Lock) saat Anda melakukan penghapusan data.
+
+```mermaid
+graph TD
+    CLI["Input CLI (--cek / --del)"] --> Auth["Cek Sesi & Login"]
+    
+    Auth --> Cek{"Kategori Utilitas?"}
+    
+    %% Alur Cek
+    Cek -->|--cek nilai / harian / bulanan| TarikData["Tarik Data (GET / POST)"]
+    TarikData --> ParseCek["Parsing HTML & Ekstrak Tabel"]
+    ParseCek --> Tampil["Tampilkan Tabel ASCII di Terminal"]
+    
+    %% Alur Delete
+    Cek -->|--del harian / bulanan| TarikDel["Tarik List Data SKP"]
+    TarikDel --> Filter{"Cek Status Kolom Persetujuan"}
+    
+    Filter -->|'Sesuai' / 'Disetujui'| Skip["Lewati (Proteksi Data Terkunci)"]
+    Filter -->|Kosong / Belum| Del["Eksekusi Hapus (POST x-www-form-urlencoded)"]
+    
+    Skip --> SelesaiDel["Tampilkan Rekap Hasil"]
+    Del --> SelesaiDel
+    
+    style Tampil fill:#0984e3,stroke:#fff
+    style Skip fill:#27ae60,stroke:#fff
+    style Del fill:#c0392b,stroke:#fff
+```
+
 ---
 
 ## 📁 Struktur Template Data
