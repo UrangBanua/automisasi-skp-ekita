@@ -234,15 +234,24 @@ def main():
             print("[ERROR] --bulan harus 1-12")
             sys.exit(1)
 
+    # Sentralisasi Inisialisasi & Login
+    # Login dibutuhkan untuk semua mode KECUALI mode utama dengan --dry-run
+    butuh_login = True
+    if not args.cek and not args.delete_target and args.dry_run:
+        butuh_login = False
 
-    if args.cek == "harian":
-        if not args.bulan:
-            sys.exit("[ERROR] --bulan wajib diisi untuk --cek harian")
+    client = None
+    if butuh_login:
         if not USERNAME or not PASSWORD:
             sys.exit("[ERROR] EKITA_USERNAME/EKITA_PASSWORD belum diatur di .env")
         client = EkitaClient()
         if not client.login(USERNAME, PASSWORD):
             sys.exit("[ERROR] Login gagal")
+
+
+    if args.cek == "harian":
+        if not args.bulan:
+            sys.exit("[ERROR] --bulan wajib diisi untuk --cek harian")
         
         bulan_str = BULAN_NAMA.get(args.bulan, str(args.bulan))
         print(f"\n[CEK HARIAN] Mengambil data harian {bulan_str} {args.tahun}...")
@@ -253,11 +262,6 @@ def main():
     if args.cek == "bulanan":
         if not args.bulan:
             sys.exit("[ERROR] --bulan wajib diisi untuk --cek bulanan")
-        if not USERNAME or not PASSWORD:
-            sys.exit("[ERROR] EKITA_USERNAME/EKITA_PASSWORD belum diatur di .env")
-        client = EkitaClient()
-        if not client.login(USERNAME, PASSWORD):
-            sys.exit("[ERROR] Login gagal")
         
         bulan_str = BULAN_NAMA.get(args.bulan, str(args.bulan))
         print(f"\n[CEK BULANAN] Mengambil data bulanan {bulan_str} {args.tahun}...")
@@ -271,11 +275,6 @@ def main():
         sys.exit(0)
     # Mode Cek Nilai
     if args.cek == "nilai":
-        if not USERNAME or not PASSWORD:
-            sys.exit("[ERROR] EKITA_USERNAME/EKITA_PASSWORD belum diatur di .env")
-        client = EkitaClient()
-        if not client.login(USERNAME, PASSWORD):
-            sys.exit("[ERROR] Login gagal")
         
         print(f"\n[CEK NILAI] Mengambil data bulanan tahun {args.tahun}...")
         resp = client._post("bulanan_ajax", raw=f"tanggal=&status={args.tahun}")
@@ -294,11 +293,6 @@ def main():
 
     # Mode Delete Harian
     if args.delete_target == "harian":
-        if not USERNAME or not PASSWORD:
-            sys.exit("[ERROR] EKITA_USERNAME/EKITA_PASSWORD belum diatur di .env")
-        client = EkitaClient()
-        if not client.login(USERNAME, PASSWORD):
-            sys.exit("[ERROR] Login gagal")
             
         bulan_str = BULAN_NAMA.get(args.bulan, str(args.bulan))
         print(f"\n[DEL HARIAN] Mengambil daftar harian {bulan_str} {args.tahun}...")
@@ -331,18 +325,16 @@ def main():
             
         print(f"      Ditemukan {len(to_delete)} data siap hapus ({skipped} data di-skip karena 'Sesuai'). Mulai menghapus...")
         for i, h_id in enumerate(to_delete, 1):
-            client.hapus_harian(h_id)
-            print(f"      [{i}/{len(to_delete)}] Berhasil dihapus ID: {h_id}")
+            if args.dry_run:
+                print(f"      [DRY RUN] Akan menghapus ID: {h_id}")
+            else:
+                client.hapus_harian(h_id)
+                print(f"      [{i}/{len(to_delete)}] Berhasil dihapus ID: {h_id}")
         print("      Selesai menghapus.")
         sys.exit(0)
 
     # Mode Delete Bulanan
     if args.delete_target == "bulanan":
-        if not USERNAME or not PASSWORD:
-            sys.exit("[ERROR] EKITA_USERNAME/EKITA_PASSWORD belum diatur di .env")
-        client = EkitaClient()
-        if not client.login(USERNAME, PASSWORD):
-            sys.exit("[ERROR] Login gagal")
             
         bulan_str = BULAN_NAMA.get(args.bulan, str(args.bulan)).upper()
         print(f"\n[DEL BULANAN] Mengambil daftar target bulanan tahun {args.tahun}...")
@@ -365,8 +357,11 @@ def main():
                     id_match = re.search(r'hapus_bulanan_skp\((\d+)\)', str(row[4]))
                     if id_match:
                         h_id = id_match.group(1)
-                        client.hapus_bulanan(h_id)
-                        print(f"      [OK] Berhasil menghapus target bulanan {bulan_str} {args.tahun} (ID: {h_id}).")
+                        if args.dry_run:
+                            print(f"      [DRY RUN] Akan menghapus target bulanan {bulan_str} {args.tahun} (ID: {h_id}).")
+                        else:
+                            client.hapus_bulanan(h_id)
+                            print(f"      [OK] Berhasil menghapus target bulanan {bulan_str} {args.tahun} (ID: {h_id}).")
                     else:
                         print(f"      [ERROR] Tidak dapat menemukan ID hapus untuk {bulan_str} {args.tahun}.")
         
@@ -415,18 +410,6 @@ def main():
         print("\n[DRY RUN] Selesai (tanpa login, tanpa kirim).")
         return
 
-    if not USERNAME or not PASSWORD:
-        print("[ERROR] EKITA_USERNAME/EKITA_PASSWORD belum diatur di .env")
-        sys.exit(1)
-
-    client = EkitaClient()
-
-    # 01. Login
-    print("\n[01] Login...")
-    if not client.login(USERNAME, PASSWORD):
-        print("[ERROR] Login gagal")
-        sys.exit(1)
-    print(f"      OK, ci_session: {client.ci_session[:16]}...")
 
     # 02. id_tahunan
     print("[02] Ambil id SKP Tahunan...")
